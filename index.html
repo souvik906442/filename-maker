@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ফাইলের নাম বানান</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 16px; background: #111; color: #eee; }
+  h2 { margin-top: 0; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 140px; font-size: 18px; padding: 10px; border-radius: 10px; border: 1px solid #444; background: #1c1c1c; color: #fff; }
+  #out { min-height: 90px; border-color: #4a9; }
+  button { font-size: 18px; padding: 12px 20px; margin: 8px 8px 8px 0; border: 0; border-radius: 10px; background: #e0605a; color: #fff; }
+  button.sec { background: #444; }
+  #msg { color: #7d7; height: 22px; }
+</style>
+</head>
+<body>
+<h2>ফাইলের নাম বানান</h2>
+<p>নিচে লেখা পেস্ট করুন:</p>
+<textarea id="inp" placeholder="এখানে পেস্ট করুন"></textarea>
+<p>ফাইলের নাম (এক লাইন):</p>
+<textarea id="out" readonly></textarea>
+<div>
+  <button id="copy">কপি করুন</button>
+  <button class="sec" id="clear">মুছুন</button>
+</div>
+<div id="msg"></div>
+<script>
+const inp = document.getElementById('inp');
+const out = document.getElementById('out');
+const msg = document.getElementById('msg');
+
+function convert(text) {
+  return text
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l.length)
+    .join('_')
+    .replace(/[\/\\:*?"<>|]/g, ''); // ফাইলের নামে নিষিদ্ধ অক্ষর বাদ
+}
+
+inp.addEventListener('input', () => { out.value = convert(inp.value); msg.textContent = ''; });
+
+document.getElementById('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(out.value); }
+  catch (e) { out.select(); document.execCommand('copy'); }
+  msg.textContent = 'কপি হয়েছে ✔';
+};
+document.getElementById('clear').onclick = () => { inp.value = ''; out.value = ''; msg.textContent = ''; };
+</script>
+</body>
+</html>
